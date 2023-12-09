@@ -1,6 +1,6 @@
-from flask import render_template ,  session , request , redirect , url_for , flash , Blueprint
+from flask import render_template , session , request , redirect , url_for , flash , Blueprint
 from src import app, db , bcrypt
-from .forms import RegistrationForm
+from .forms import RegistrationForm , Loginforms
 from .models import User
 import os
 
@@ -23,3 +23,18 @@ def register():
         return redirect(url_for('home'))
     return render_template('admin/register.html', form=form , title = "Registration Page")
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = Loginforms(request.form)
+    if request.method == 'POST' and form.validate():
+        user = user.query.filter_by(email= form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            session['email'] = form.email.data
+            flash(f'welcom {form.email.data} ')
+            return redirect(request.args.get('next') or url_for('admin'))
+        else:
+            flash('invalid credentials ' , 'danger')
+
+    
+    return render_template('admin/login.html', form=form , title = "Login Page")

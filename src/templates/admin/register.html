@@ -5,6 +5,7 @@
 <div class="text-centre h1">Sign up</div>
 
 <div class=" containers">
+  { % include '_messages.html' %}
 
     {% from "_formhelpers.html" import render_field %}
 <form method=post enctype="multipart/form-data">
@@ -17,7 +18,7 @@
     {{ render_field(form.accept_tos, class="form-control") }}
     <input type="file" name="photo">
   </dl>
-  <p><input type=submit value=Register class="btn btn-info mt-2"></p>
+  <p><input type=submit value="Register" class="btn btn-info mt-2"></p>
 
 </form>
 
