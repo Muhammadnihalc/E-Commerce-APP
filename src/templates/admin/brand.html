@@ -47,30 +47,34 @@
 </div>
 
 <div class="container mt-5">
-    <table class="table table-sm table-stripped table-condensed">
+    <table class="table table-sm table-stripped table-condensed table-hover">
         <thead>
             <th>sr</th>
-            <th>product</th>
-            <th>price</th>
-            <th>brand</th>
-            <th>discount</th>
-            <th>image</th>
+            <th>Name</th>
             <th>Edit</th>
             <th>delete
-                <tbody>
-                    {% for product in products %}
+                <tbody>\
+                    {% if brands %}
+                    {% for brand in brands %}
                     <tr>
                         <td>{{loop.index}}</td>
-                        <td>{{product.name}}</td>
-                        <td>{{product.price}}</td>
-                        <td>{{product.brand.name}}</td>
-                        <td>{{product.discount}}</td>
-                        
-                        <td><img src="{{url_for('static', filename='images/' + product.image_1)}}" width="30" , height="40"</td>
-                        <td>Edit</td>
-                        <td>delete</td>
+                        <td>{{brand.name}}</td>
+                 
+                        <td <a href="{{url_for('updatebrand', id=brand.id)}}" class="btn btn-sm btn-outline-info"></a>>Edit</td>
+                        <td <a href="" class="btn btn-sm btn-outline-danger"></a>>delete</td>
                     </tr>
                     {% endfor %}
+                      {% else %}
+                      {% for category in catagories %}
+                      <tr>
+                          <td>{{loop.index}}</td>
+                          <td>{{category.name}}</td>
+                   
+                          <td <a href="{{url_for('updatecat', id=category.id)}}" class="btn btn-sm btn-outline-info"></a>>Edit</td>
+                          <td <a href="" class="btn btn-sm btn-outline-danger"></a>>delete</td>
+                      </tr>
+                    {% endfor %}
+                    {% endif %}
                 </tbody>
             </th>
         </thead>

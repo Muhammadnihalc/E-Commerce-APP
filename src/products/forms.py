@@ -4,7 +4,7 @@ from wtforms import Form, BooleanField, StringField, PasswordField, validators ,
 class Addproducts(Form):
     name = StringField('Name', [validators.DataRequired()])
     price = IntegerField('price', [validators.DataRequired()])
-    discounts = IntegerField('Discounts', default=0)
+    discount = IntegerField('Discount', default=0)
     stock = IntegerField('Stock', [validators.DataRequired()])
     discription = TextAreaField('Discription', [validators.DataRequired()])
     colors = TextAreaField('colors', [validators.DataRequired()])
