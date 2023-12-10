@@ -1,8 +1,8 @@
-from flask import redirect , render_template , url_for , flash , request, session , g
+from flask import redirect , render_template , url_for , flash , request, session , g , current_app
 from src import db , app , photos
 from .models import Brand , Category , Addproduct
-import secrets
-from .forms import Addproducts
+import secrets , os
+from .forms import Addproducts 
 
 
 @app.route('/addbrand', methods = ['GET', 'POST'])
@@ -39,6 +39,19 @@ def updatebrand(id):
     return render_template('products/updatebrand.html', title='Update Brand Page', updatebrand=updatebrand)
 
 
+@app.route('/deletebrand/<int:id>', methods=['GET', 'POST'])
+def deletebrand(id):
+    brand = Brand.query.get_or_404(request.args.get('id'))
+    if request.method == 'POST':
+        db.session.delete(brand)
+        db.session.commit()
+        flash(f'your brand {brand.name} has been deleted', 'success')
+        return redirect(url_for('admin'))
+    
+    flash(f'your brand {brand.name} cannot be deleted', 'success')
+    return redirect(url_for('admin'))   
+
+
 @app.route('/addcategory', methods = ['GET', 'POST'])
 def addcat():
     if request.method == 'POST':
@@ -64,6 +77,19 @@ def updatecategory():
         db.session.commit()
         return redirect(url_for('category'))
     return render_template('products/updatebrand.html',  title='update category page', updatecat= updatecat)
+
+
+@app.route('/deletecategory/<int:id>', methods=['GET', 'POST'])
+def deletecategory(id):
+    category = Category.query.get_or_404(request.args.get('id'))
+    if request.method == 'POST':
+        db.session.delete(category)
+        db.session.commit()
+        flash(f'your brand {category.name} has been deleted', 'success')
+        return redirect(url_for('admin'))
+    
+    flash(f'your category {category.name} cannot be deleted', 'success')
+    return redirect(url_for('admin'))  
 
 
 
@@ -97,4 +123,76 @@ def Addproduct():
         return redirect(url_for('admin'))
     return render_template('products/addproduct.html', title="Add product Page", form=form , brands = brands , Categories = Categories)
 
+
+@app.route('/updateproduct/<int:id>', methods = ['GET', 'POST'])
+def updateproduct(id):
+    brands = Brand.query.all()
+    Categories = Categories.query.all()
+    product = Addproduct.query.get_or_404(id)
+    Category = request.form.get('category')
+    brand = request.form.get('brand')
+    form = Addproduct(request.form)
+    if request.method == "POST":
+        product.name = form.name.data
+        product.price = form.price.data
+        product.discount = form.discount.data
+        product.stock = form.stock.data
+        product.color = form.color.data
+        product.discription = form.discription.data
+        if request.files.get('image_1'):
+            try:
+                os.unlink(os.path.join(current_app.root_path,"static/images/" + product.image_1))
+                product.image_1 = photos.save(request.files.get('images_1'), name=secrets.token_hex(16)+",")
+            except:
+                product.image_1 = photos.save(request.files.get('images_1'), name=secrets.token_hex(16)+",")
+
+        if request.files.get('image_2'):
+            try:
+                os.unlink(os.path.join(current_app.root_path,"static/images/" + product.image_2))
+                product.image_2 = photos.save(request.files.get('images_2'), name=secrets.token_hex(16)+",")
+            except:
+                product.image_2 = photos.save(request.files.get('images_2'), name=secrets.token_hex(16)+",")
+
+
+        if request.files.get('image_3'):
+            try:
+                os.unlink(os.path.join(current_app.root_path,"static/images/" + product.image_3))
+                product.image_3 = photos.save(request.files.get('images_3'), name=secrets.token_hex(16)+",")
+            except:
+                product.image_3 = photos.save(request.files.get('images_3'), name=secrets.token_hex(16)+",")
+
+
+        db.session.commit()
+        flash(f'The product has been updated' , 'success')
+
+    form.name.data = product.name
+    form.price.data = product.price
+    form.discount.data = product.discount
+    form.stock.data = product.stock
+    form.color.data = product.color
+    form.discription.data = product.discription
+
+    return render_template('products/updateproduct.html', title="Add product Page", form=form , brands = brands , Categories = Categories , product = product)
+
+
+@app.route('/deleteproduct/<int:id>', methods=['POST'])
+def deleteproduct(id):
+    product = Addproduct.query.get_or_404(id)
+    if request.method =='POST':
+        if request.files.get('image_1'):
+            try:
+                os.unlink(os.path.join(current_app.root_path,"static/images/" + product.image_1))
+                os.unlink(os.path.join(current_app.root_path,"static/images/" + product.image_2))
+                os.unlink(os.path.join(current_app.root_path,"static/images/" + product.image_3))
+            except Exception as e:
+                print(e)
+
+
+        db.session.delete(product)
+        db.session.commit()
+        flash(f'The product {product.name} has been deleted' , 'success')
+        return redirect(url_for('admin'))
+
+    flash(f'The product cannot be deleted' , 'success')
+    return redirect(url_for('admin'))
 
