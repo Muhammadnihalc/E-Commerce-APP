@@ -5,12 +5,12 @@
 <div class="text-centre h1">Sign up</div>
 
 <div class=" containers">
-  { % include '_messages.html' %}
+  {% include '_messages.html' %}
 
     {% from "_formhelpers.html" import render_field %}
 <form method=post enctype="multipart/form-data">
   <dl>
-    {{ render_field(form.Name , class="form-control") }}
+    {{ render_field(form.name, class="form-control") }}
     {{ render_field(form.username , class="form-control") }}
     {{ render_field(form.email , class="form-control") }}
     {{ render_field(form.password , class="form-control") }}
