@@ -5,6 +5,32 @@ import secrets , os
 from .forms import Addproducts 
 
 
+@app.route('/')
+def home():
+    products = Addproduct.query.filter(Addproduct.stock > 0)
+    brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
+    categories = Category.query.join(Addproduct, (Category.id == Addproduct.category_id)).all()
+    return render_template('products/index.html' , products=products , brands=brands , categories=categories)
+
+
+@app.route('/brand/<int:id>')
+def get_brand():
+    brand = Addproduct.query.filter(brand_id = id)
+    brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
+    categories = Category.query.join(Addproduct, (Category.id == Addproduct.category_id)).all()
+    return render_template('products/index.html' , brand=brand , brands=brands , categories=categories)
+
+
+
+@app.route('/categories/<int:id>')
+def get_category():
+    get_prod= Addproduct.query.filter(category_id = id)
+    categories = Category.query.join(Addproduct, (Category.id == Addproduct.category_id)).all()
+    brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
+    return render_template('products/index.html' , get_prod=get_prod , categories=categories, brands=brands)
+
+
+
 @app.route('/addbrand', methods = ['GET', 'POST'])
 def addbrand():
     if not g.logged_in:
