@@ -22,3 +22,4 @@ bcrypt = Bcrypt(app)
 
 from src.admin import routes
 from src.products import routes
+from src.cart import carts
