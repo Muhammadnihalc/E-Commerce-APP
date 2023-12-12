@@ -42,5 +42,72 @@ def AddCart():
 
     finally:
         return redirect(request.referrer)
+    
+
+
+@app.route('/Carts', methods = ['POST'])
+def  get_cart():
+    if 'Shoppingcart' in session:
+        return redirect(request.referrer)
+    
+    subtotal = 0
+    grandtotal = 0
+
+    for key.product in session['shoppingcart'].items():
+        discount = (product ['discount']/100 + float(product['price']))
+        subtotal += float(product['price']) * int(product['quantity'])
+        tax = ("%0.2f" % (.06 * float(subtotal)))
+        grandtotal = float("%0.2f" % (1.06 * subtotal))
+
+
+    return render_template('products/carts.html' , tax=tax , grandtotal=grandtotal)
+
+
+
+@app.route('/empty')
+def empty_cart():
+    try:
+        session.clear()
+        return redirect(url_for('home'))
+    
+    except Exception as e:
+        print(e)
+
+
+@app.route('/updatecart/<int:code>' , methods=['POST'])
+def updatecart(code):
+    if 'Shoppingcart' not in session and len(session['Shoppingcart']) <= 0:
+        return redirect(url_for('home'))
+    
+    if request.method == 'POST':
+        quantity = request.form.get('quantity')
+        color = request.form.get('color')
+        try:
+            session.modified = True
+            for key , item in session['Shoppingcart'].items():
+                if int(key)  == code:
+                    item['quantity'] = quantity
+                    item['color'] = color
+                    flash('item updated')
+                    return redirect(url_for('getcart'))
+
+        except Exception as e:
+            print(e)
+
+        return redirect(url_for('getcart'))
+
+    return
+
+
+
+
+
+
+
+    
+    
+
+
+
 
    
