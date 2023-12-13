@@ -48,21 +48,27 @@
                     <td>{{product.Discount}} &nbsp;  % is {{discount}} </td>
                     {% else %}
                 
-                    <td>{{}}</td>
+                    <td></td>
                     {% endif %}
                     {% set subtotal = product.quantity | int * product.price|float %}
                     <td>{{"%0.2f" subtotal | format{{subtotal | (float) - discount | float}}}}</td>
                     <td><button type="submit" class="btn btn-sm btn-info"> update</button></td>
                     </form>
-                    <td><a href="#"></a>remove</td>
+                    <td><a href="{{url_for('deleteitem', id = key)}}" class="btn btn-sm btn-danger"></a>remove</td>
                 </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table class="table table-sm">
                 <tr>
-                    <td></td>
-                    <td><a href="/">Countinue shopig</a></td>
+                    
+                    <td><a href="/" class="btn btn-success">Check out</a></td>
+                    <td width="35%"></td>
                     <td colspan="3"><h3>Tax : {{tax}} </h3></td>
                     <td colspan="3"><h3> Grand Total : {{grandtotal}} </h3></td>
+                    <td><a href="{{url_for('clearcart')}}" class="btn btn-danger btn-sm  float-right mr-2">Clear cart</a> </td>
                 </tr>
-            </tbody>
+        
 
         </table>
     </div>

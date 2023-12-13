@@ -1,6 +1,8 @@
 from flask import redirect , render_template , url_for , flash , request, session , g , current_app
 from src import db , app 
 from src.products.models import Addproduct
+from src.products.routes import brands , catagories
+import json
 
 
 def MergeDicts(dict1 , dict2):
@@ -26,7 +28,11 @@ def AddCart():
             if 'Shoppingcart' in session:
                 print(session['shoppingcart'])
                 if product_id in session['shoppingcart']:
-                    print("This product is already in your cart")
+                    for key.item in session['shoppingcart'].items():
+                        if int(key) == int(product_id):
+                            session.modified = True
+                            items['quantity'] += 1
+                
                 else:
                     session['shoppingcart'] = MergeDicts(session['shoppingcart'], DictItems)
                     return redirect(request.referrer)
@@ -47,8 +53,8 @@ def AddCart():
 
 @app.route('/Carts', methods = ['POST'])
 def  get_cart():
-    if 'Shoppingcart' in session:
-        return redirect(request.referrer)
+    if 'Shoppingcart' in session or len(session['Shoppingcart']) <= 0:
+        return redirect(url_for('home'))
     
     subtotal = 0
     grandtotal = 0
@@ -60,7 +66,7 @@ def  get_cart():
         grandtotal = float("%0.2f" % (1.06 * subtotal))
 
 
-    return render_template('products/carts.html' , tax=tax , grandtotal=grandtotal)
+    return render_template('products/carts.html' , tax=tax , grandtotal=grandtotal , brands=brands(), catagories=catagories())
 
 
 
@@ -76,7 +82,7 @@ def empty_cart():
 
 @app.route('/updatecart/<int:code>' , methods=['POST'])
 def updatecart(code):
-    if 'Shoppingcart' not in session and len(session['Shoppingcart']) <= 0:
+    if 'Shoppingcart' not in session or len(session['Shoppingcart']) <= 0:
         return redirect(url_for('home'))
     
     if request.method == 'POST':
@@ -96,7 +102,39 @@ def updatecart(code):
 
         return redirect(url_for('getcart'))
 
-    return
+    
+
+@app.route('/deleteitem/<int:id>' , methods=['POST'])
+def deleteitem(id):
+    if 'Shoppingcart' not in session or len(session['Shoppingcart']) <= 0:
+        return redirect(url_for('home'))
+    
+    try:
+        session.modified = True
+        for key.items in session['shoppingcart'].items():
+            if int(key) == id:
+                session['shoppingcart'].pop(key , None)
+                return redirect(url_for('getcart'))
+            
+
+    
+
+    except Exception as e:
+        print(e)
+        return redirect(url_for('get_cart'))
+    
+
+@app.route('/clearcart' , methods=['POST'])
+def clearcart():
+    try:
+        session.pop('shoppingcart', None)
+        return redirect(url_for('home'))
+    
+    except Exception as e:
+        print(e)
+
+    
+
 
 
 
