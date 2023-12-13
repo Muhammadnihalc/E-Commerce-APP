@@ -4,6 +4,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 class Addproduct(db.Model):
+    __searchable__ = ['name','desc']
     id = db.Column(db.Integer, primary_key=True)
     Name = db.Column(db.String(30), nullable=False)
     price = db.Column(db.Numeric(80),  nullable=False)

@@ -1,8 +1,9 @@
 from flask import redirect , render_template , url_for , flash , request, session , g , current_app
-from src import db , app , photos
+from src import db , app , photos , search
 from .models import Brand , Category , Addproduct
 import secrets , os
 from .forms import Addproducts 
+
 
 
 def brands():
@@ -22,6 +23,13 @@ def home():
     page = request.args.get('page',1,type=int)
     products = Addproduct.query.filter(Addproduct.stock > 0).order_by(Addproduct.id.desc()).paginate(page=page , per_page = 4)
     return render_template('products/index.html' , products=products , brands=brands() , categories=catagories())
+
+@app.route('/result')
+def result():
+    searchword = request.args.get('q')
+    products = Addproduct.query.msearch(searchword , fields=['name','desc'], limit=6)
+    return render_template('products/result.html', products=products , brands=brands() , categories=catagories())
+
 
 @app.route('/product/<int:id>')
 def single_page():
