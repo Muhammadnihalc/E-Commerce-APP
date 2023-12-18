@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupon Page</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .flashes {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .flashes li {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+
+        .info {
+            background-color: #d9edf7;
+            color: #31708f;
+        }
+
+        .warning {
+            background-color: #fcf8e3;
+            color: #8a6d3b;
+        }
+    </style>
+    <!-- Add any additional styling or links to CSS here -->
+</head>
+<body>
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    {% set category = message.split(' ')[0] %}
+                    <li class="{{ category|lower }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Add any additional HTML content here -->
+
+</div>
+
+</body>
+</html>

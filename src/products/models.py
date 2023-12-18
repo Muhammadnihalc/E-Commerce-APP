@@ -1,45 +1,43 @@
 from src import db
 from datetime import datetime
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
 
 class Addproduct(db.Model):
-    __searchable__ = ['name','desc']
+    __searchable__ = ['name', 'desc']
     id = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(30), nullable=False)
-    price = db.Column(db.Numeric(80),  nullable=False)
-    discount = db.Column(db.Integer(), default=0)
-    stock = db.Column(db.Integer(),  nullable=False)
-    desc = db.Column(db.Text(180),  nullable=False)
-    colors = db.Column(db.Text(180), unique=False, nullable=False)
-    pub_date = db.Column(db.DateTime, nullable=False , default=datetime.utcnow)
+    name = db.Column(db.String(80), nullable=False)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+    discount = db.Column(db.Integer, default=0)
+    stock = db.Column(db.Integer, nullable=False)
+    colors = db.Column(db.Text, nullable=False)
+    desc = db.Column(db.Text, nullable=False)
+    pub_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    brand_id = db.Column(db.Integer , db.ForeignKey('brand.id'), nullable=False)
-    brand = db.relationship('Brand', backref=db.backref('posts', lazy=True))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    category = db.relationship('Category', backref=db.backref('categories', lazy=True))
 
-    category_id = db.Column(db.Integer , db.ForeignKey('category.id'), nullable=False)
-    category = db.relationship('Category', backref=db.backref('posts', lazy=True))
+    brand_id = db.Column(db.Integer, db.ForeignKey('brand.id'), nullable=False)
+    brand = db.relationship('Brand', backref=db.backref('brands', lazy=True))
 
-    image_1 = db.Column(db.String(150), nullable=False , default='image.jpg')
-    image_2 = db.Column(db.String(150), nullable=False , default='image.jpg')
-    image_3 = db.Column(db.String(150), nullable=False , default='image.jpg')
+    image_1 = db.Column(db.String(150), nullable=False, default='image1.jpg')
+    image_2 = db.Column(db.String(150), nullable=False, default='image2.jpg')
+    image_3 = db.Column(db.String(150), nullable=False, default='image3.jpg')
 
     def __repr__(self):
-        return '<Addproduct %r>' % self.name
-
-
+        return '<Post %r>' % self.name
 
 class Brand(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), unique=True, nullable=False)
-    categories = relationship('Category', backref='brand', lazy=True)
+    name = db.Column(db.String(30), unique=True, nullable=False)
+    products = db.relationship('Addproduct', backref='brand_relation', lazy=True, cascade='all, delete-orphan')
+
+
+    def __repr__(self):
+        return '<Brand %r>' % self.name
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), unique=True, nullable=False)
-    brand_id = db.Column(db.Integer, ForeignKey('brand.id'), nullable=False)
+    name = db.Column(db.String(30), unique=True, nullable=False)
+    products = db.relationship('Addproduct', backref='category_relation', lazy=True, cascade='all, delete-orphan')
 
-
-
-
-
+    def __repr__(self):
+        return '<Category %r>' % self.name

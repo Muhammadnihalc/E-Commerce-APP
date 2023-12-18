@@ -10,6 +10,7 @@ class RegistrationForm(Form):
     ])
     confirm = PasswordField('Repeat Password')
     accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
+    company_secret_code = StringField('Company Secret Code', [validators.DataRequired(), validators.Length(min=8, max=20)])
 
 class Loginforms(Form):
     email = StringField('Email Address', [validators.Length(min=6, max=35)])

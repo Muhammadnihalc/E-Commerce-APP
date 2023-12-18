@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanks for Shopping</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #2ecc71;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #333;
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            text-decoration: none;
+            background-color: #3498db;
+            color: #fff;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Thanks for Shopping</h1>
+        <p>Payement success. We appreciate your business!</p>
+        <a href="{{url_for('home', page=page_num)}}" class="button">Continue Shopping</a>
+    </div>
+</body>
+
+</html>
