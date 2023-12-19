@@ -2,30 +2,29 @@
 
 {% block content %}
 
-<div class="text-center display-4 mt-5 text-primary">Sign Up</div>
+<div class="text-centre h1">Sign up</div>
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            {% include '_messages.html' %}
-            {% from "_formhelpers.html" import render_field %}
-            <form method="post" enctype="multipart/form-data">
-                {{ render_field(form.name, class="form-control", placeholder="Your Full Name") }}
-                {{ render_field(form.username, class="form-control", placeholder="Username") }}
-                {{ render_field(form.email, class="form-control", placeholder="Your Email") }}
-                {{ render_field(form.password, class="form-control", placeholder="Password") }}
-                {{ render_field(form.confirm, class="form-control", placeholder="Confirm Password") }}
-                {{ render_field(form.accept_tos, class="form-check-input", id="accept_tos") }}
-                <label class="form-check-label" for="accept_tos">I accept the terms of service</label>
-                {{ render_field(form.company_secret_code, class="form-control", placeholder="Company Secret Code") }}
-                <div class="form-group mt-3">
-                    <label for="photo" class="h6 text-muted">Profile Photo:</label>
-                    <input type="file" name="photo" class="form-control-file">
-                </div>
-                <button type="submit" class="btn btn-primary mt-3">Register</button>
-            </form>
-        </div>
-    </div>
+<div class=" containers">
+  {% include '_messages.html' %}
+
+    {% from "_formhelpers.html" import render_field %}
+<form method=post enctype="multipart/form-data">
+  <dl>
+    {{ render_field(form.name, class="form-control") }}
+    {{ render_field(form.username , class="form-control") }}
+    {{ render_field(form.email , class="form-control") }}
+    {{ render_field(form.password , class="form-control") }}
+    {{ render_field(form.confirm , class="form-control" ) }}
+    {{ render_field(form.accept_tos, class="form-control") }}
+    {{ render_field(form.company_secret_code, class="form-control") }}
+    <input type="file" name="photo">
+  </dl>
+  <p><input type=submit value="Register" class="btn btn-info mt-2"></p>
+
+</form>
+
 </div>
+
+
 
 {% endblock content %}
