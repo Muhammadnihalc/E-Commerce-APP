@@ -75,7 +75,7 @@ Create a Virtual Environment:
 Install requirement.txt file
 
 ```bash
-  pip install -r requirements.txt
+  pip install -r requirement.txt
 
 ```
 
