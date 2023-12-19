@@ -2,62 +2,38 @@
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
 
-<div class="container mt-5">
+
+<div class="container">
     <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">
-            <h1 class="bg-info text-center p-3 rounded">Register</h1>
+            <h1 class="bg-info text-center">Register</h1>
         </div>
         <div class="col-md-2"></div>
     </div>
-
-    <form action="" method="post" class="mt-4">
+    <form action="" method="post">
         {{ form.csrf_token }}
         <div class="row">
             <div class="col-md-2"></div>
             <div class="col-md-4">
-                <div class="mb-3">
-                    {{ render_field(form.name, class="form-control", placeholder="Your Name") }}
-                </div>
-                <div class="mb-3">
-                    {{ render_field(form.username, class="form-control", placeholder="Username") }}
-                </div>
-                <div class="mb-3">
-                    {{ render_field(form.email, class="form-control", placeholder="Your Email") }}
-                </div>
-                <div class="mb-3">
-                    {{ render_field(form.password, class="form-control", placeholder="Password") }}
-                </div>
-                <div class="mb-3">
-                    {{ render_field(form.confirm, class="form-control", placeholder="Confirm Password") }}
-                </div>
-                <div class="mb-3">
-                    {{ form.profile(class="form-control") }}
-                </div>
+                {{ render_field(form.name, class="form-control")}}
+                {{ render_field(form.username,class="form-control")}}
+                {{ render_field(form.email,class="form-control")}}
+                {{ render_field(form.password, class="form-control")}}
+                {{ render_field(form.confirm ,class="form-control")}}
+                {{ form.profile() }}
             </div>
             <div class="col-md-4">
-                <div class="mb-3">
-                    {{ render_field(form.country, class="form-control", placeholder="Your Country") }}
-                </div>
-                <div class="mb-3">
-                    {{ render_field(form.city, class="form-control", placeholder="Your City") }}
-                </div>
-                <div class="mb-3">
-                    {{ render_field(form.contact, class="form-control", placeholder="Your Contact") }}
-                </div>
-                <div class="mb-3">
-                    {{ render_field(form.address, class="form-control", placeholder="Your Address") }}
-                </div>
-                <div class="mb-3">
-                    {{ render_field(form.zipcode, class="form-control", placeholder="Your Zip Code") }}
-                </div>
-                <div class="text-center">
-                    {{ form.submit(class="btn btn-sm btn-info") }}
-                </div>
+                {{ render_field(form.country,class="form-control")}}
+                {{ render_field(form.city, class="form-control")}}
+                {{ render_field(form.contact, class="form-control")}}
+                {{ render_field(form.address, class="form-control")}}
+                {{ render_field(form.zipcode, class="form-control")}}
+                {{ form.submit(class="btn btn-sm btn-info float-right") }}
             </div>
             <div class="col-md-2"></div>
         </div>
     </form>
 </div>
 
-{% endblock content %}
+{% endblock content %} 
