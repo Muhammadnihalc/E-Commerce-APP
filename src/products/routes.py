@@ -24,9 +24,15 @@ def catagories():
 @app.route('/')
 def home():
     # Get the page parameter from the request, defaulting to 1 if not provided
-    page = request.args.get('page',1, type=int)
+    page = request.args.get('page', 1, type=int)
     products = Addproduct.query.filter(Addproduct.stock > 0).order_by(Addproduct.id.desc()).paginate(page=page, per_page=8)
-    return render_template('products/index.html', products=products,brands=brands(), categories=catagories())
+
+    # Check if there are no products
+    if not products.items:
+        flash("Sorry, admin has not added any products. You can browse and purchase the products once the admin adds them.", 'info')
+
+    return render_template('products/index.html', products=products, brands=brands(), categories=catagories())
+
 
 
 # this route helps in searching 
@@ -198,8 +204,7 @@ def delete_category(category_id):
 
     return redirect(url_for('admin_home'))
 
-
-# add a new product
+#add a new product
 @app.route('/addproduct', methods=['GET', 'POST'])
 def add_product():
     if 'logged_in' not in session or not session['logged_in']:
@@ -208,35 +213,40 @@ def add_product():
 
     brands = Brand.query.all()
     categories = Category.query.all()
- 
+
     form = Addproducts(request.form)
 
     if request.method == 'POST':
-        name = form.name.data
-        price = form.price.data
-        discount = form.discount.data
-        stock = form.stock.data
-        colors = form.colors.data
-        desc = form.discription.data 
-        brand = request.form.get('brand')
-        category = request.form.get('category')  
-        
-        image_1 = save_image(request.files.get('image_1'))
-        image_2 = save_image(request.files.get('image_2'))
-        image_3 = save_image(request.files.get('image_3'))
+        try:
+            name = form.name.data
+            price = form.price.data
+            discount = form.discount.data
+            stock = form.stock.data
+            colors = form.colors.data
+            desc = form.discription.data
+            brand = request.form.get('brand')
+            category = request.form.get('category')
 
-        addpro = Addproduct(
-            name=name, price=price, discount=discount, stock=stock, colors=colors,
-            desc=desc, brand_id=brand, category_id=category,
-            image_1=image_1, image_2=image_2, image_3=image_3
-        )
-        db.session.add(addpro)
-        flash(f'The product {name} was added', 'success')
-        db.session.commit()
-        return redirect(url_for('admin_home'))
+            image_1 = save_image(request.files.get('image_1'))
+            image_2 = save_image(request.files.get('image_2'))
+            image_3 = save_image(request.files.get('image_3'))
+
+            addpro = Addproduct(
+                name=name, price=price, discount=discount, stock=stock, colors=colors,
+                desc=desc, brand_id=brand, category_id=category,
+                image_1=image_1, image_2=image_2, image_3=image_3
+            )
+
+            db.session.add(addpro)
+            flash(f'The product {name} was added', 'success')
+            db.session.commit()
+            return redirect(url_for('admin_home'))
+
+        except Exception as e:
+            flash('verify the uploaded images are in valid format like jpeg,png ,jpg etc... ', 'danger')
+            return redirect(url_for('add_product'))
 
     return render_template('products/addproduct.html', title="Add product", form=form, brands=brands, categories=categories)
-
 
 
 # update the specific product
@@ -326,4 +336,3 @@ def deleteproduct(id):
 
     flash(f'The product cannot be deleted' , 'success')
     return redirect(url_for('admin_home'))
-
