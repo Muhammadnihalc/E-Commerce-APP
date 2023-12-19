@@ -6,6 +6,7 @@ from src.products.models import Addproduct , Brand ,Category
 import os
 
 
+
 #Admin home route which Displays all the list of products.
 @app.route('/admin')
 def admin_home():
@@ -79,7 +80,9 @@ def login():
             else:
                 flash('Invalid credentials - wrong password', 'danger')
         else:
-            flash('No such user has been registered. Please register.', 'danger')
+            flash('No such user was been registered.', 'danger')
+        
+
             return redirect(url_for('register'))
 
     return render_template('admin/login.html', form=form, title="Login Page")
