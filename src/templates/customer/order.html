@@ -1,75 +1,88 @@
 {% extends 'layout.html' %}
 {% block content %}
 {% include 'navbar.html' %}
-
 <div class="container mt-4">
     {% include '_messages.html' %}
     <div class="row">
         <div class="col-md-12">
-            <h4 class="mb-4">Invoice: {{ orders.invoice }}</h4>
-            <p>Status: {{ orders.status }}</p>
-            <p>Customer name: {{ customer.name }}</p>
-            <p>Customer email: {{ customer.email }}</p>
-            <p>Customer contact: {{ customer.contact }}</p>
-
-            <table class="table table-striped table-bordered mt-4">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Sr</th>
-                        <th>Name</th>
-                        <th>Color</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Discount</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for key, product in orders.orders.items() %}
-                    {% set discount = (product.discount / 100) * product.price | float %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ product.name }}</td>
-                        <td>{{ product.color|capitalize }}</td>
-                        <td>{{ "%.2f"|format(product.price) }}</td>
-                        <td>{{ product.quantity }}</td>
-                        {% if product.discount %}
-                        <td>{{ product.discount }}% ({{ "%.2f"|format(discount) }})</td>
-                        {% else %}
-                        <td></td>
-                        {% endif %}
-                        {% set subtotal = product.quantity | int * product.price | float %}
-                        <td>{{ "%.2f"|format(subtotal - discount | round(1, 'floor')) }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    {% if orders.status != 'Paid' %}
-                    <form action="{{ url_for('payment') }}" method="POST">
-                        <input type="hidden" name="amount" value="{{ grandTotal }}">
-                        <input type="hidden" name="invoice" value="{{ orders.invoice }}">
-                        <script src="https://checkout.stripe.com/checkout.js"
-                                class="stripe-button"
-                                data-key="pk_test_51ONCYrSFRFKTWFd7Jytzziv4iaUWIcVaSZpVD58tQcGtQAYtl2rCpzIb8GpRqOBgvW0yDmHHRwnf1u8jIiV94ybQ00fcBUBiFc"
-                                data-name="{{ customer.name }}"
-                                data-description="My online purchase"
-                                data-amount="{{ grandTotal }}"
-                                data-currency="inr">
-                        </script>
-                    </form>
+            Inoice: {{orders.invoice}}
+            <br>
+            status: {{orders.status}}
+            <br>
+            Customer name: {{customer.name}}
+            <br>
+            Customer email: {{customer.email}}
+            <br>
+            Customer contact: {{customer.contact}}
+            <br>
+            <br>
+        <table class="table table-sm">
+            <thead>
+                <th>Sr</th>
+                <th>Name</th>
+                <th>Color</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Discount</th>
+                <th>Subtotal</th>
+            </thead>
+            <tbody>
+                {% for key, product in orders.orders.items() %}
+                {% set discount =(product.discount/100) * product.price|float %}
+                <tr>
+                    <td>{{loop.index}}</td>
+                    <td>{{product.name}}</td>
+                    <form action="{{url_for('updatecart', code=key)}}" method="post">
+                    <td> 
+                        {{product.color|capitalize}}
+                    </td>
+                    <td>{{"%.2f"|format(product.price)}}</td>
+                    <td> {{product.quantity}} </td>
+                    {% if product.discount  %}
+                    <td>{{product.discount}} % &nbsp; &nbsp; is {{"%.2f"|format(discount)}}</td>
+                    {% else %}
+                    <td></td>
                     {% endif %}
-                </div>
-                <div class="col-md-6 text-right">
-                    <h5>Tax: Rs {{ tax }}</h5>
-                    <h4>Grand total: Rs {{ grandTotal }}</h4>
-                    <a href="{{ url_for('clearcart') }}" class="btn btn-danger btn-sm mt-2">Clear Cart</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                    {% set subtotal = product.quantity|int * product.price|float  %}
+                    <td>{{"%.2f"|format(subtotal - discount|round(1,'floor')) }}</td>
+                </form>        
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table class="table table-sm">
+           <tr> 
 
+               <td>  
+                   {% if orders.status =='Paid' %}
+ 
+                   {% else %}
+                <form action="{{url_for('payment')}}" method="POST">
+                {% set amount =  grandTotal|string|replace('.','') %}
+                <input type="hidden" name="amount" value="{{amount}}">
+                <input type="hidden" name="invoice" value="{{orders.invoice}}">
+                <script src="https://checkout.stripe.com/checkout.js"
+                  class="stripe-button"
+                  data-key="pk_test_51ONCYrSFRFKTWFd7Jytzziv4iaUWIcVaSZpVD58tQcGtQAYtl2rCpzIb8GpRqOBgvW0yDmHHRwnf1u8jIiV94ybQ00fcBUBiFc"
+                  data-name="{{customer.name}}"
+                  data-description="My online purchase"
+                  data-amount="{{amount}}"
+                  data-currency="inr">
+                </script>
+              </form> 
+              {% endif %}
+            </td>
+               <td width="35%"></td>
+               <td> <h5>Tax: Rs &nbsp; {{tax}}</h5></td>
+               <td> <h5>Grand total: Rs &nbsp; {{grandTotal}}</h3> </td>
+               
+                <td> 
+                    <a href="{{url_for('clearcart')}}" class="btn btn-danger btn-sm  float-right mr-2">clear cart</a>
+                    
+                </td>
+           </tr>
+        </table>
+    </div>
+  </div>
+</div>
 {% endblock content %}
