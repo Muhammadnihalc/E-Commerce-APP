@@ -1,4 +1,4 @@
-from flask import render_template , session , request , redirect , url_for , flash , Blueprint
+from flask import render_template , session , request , redirect , url_for , flash , Blueprint 
 from src import app, db , bcrypt
 from .forms import CustomerRegisterForm , CustomerLoginForm 
 from .model import Register , CustomerOrder , Coupons
@@ -8,6 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 import secrets
 import stripe
+
 import os
 
 
@@ -56,7 +57,9 @@ def payment():
         # Updating order status
         orders = CustomerOrder.query.filter_by(customer_id=current_user.id, invoice=invoice).order_by(CustomerOrder.id.desc()).first()
         orders.status = 'paid'
-        session.pop('coupon_code_discount')
+        if 'coupon_code_discount' in session:
+            session.pop('coupon_code_discount')
+            
         db.session.commit()
   
 
@@ -69,7 +72,9 @@ def payment():
         # Update order status even if an exception occurs
         orders = CustomerOrder.query.filter_by(customer_id=current_user.id, invoice=invoice).order_by(CustomerOrder.id.desc()).first()
         orders.status = 'paid'
-        session.pop('coupon_code_discount')
+        if 'coupon_code_discount' in session:
+            session.pop('coupon_code_discount')
+
         db.session.commit()
         return redirect(url_for('thankyou'))
     
@@ -80,7 +85,9 @@ def payment():
         # Update order status even if a Stripe exception occurs
         orders = CustomerOrder.query.filter_by(customer_id=current_user.id, invoice=invoice).order_by(CustomerOrder.id.desc()).first()
         orders.status = 'paid'
-        session.pop('coupon_code_discount')
+        if 'coupon_code_discount' in session:
+            session.pop('coupon_code_discount')
+
         db.session.commit()
 
         return redirect(url_for('thankyou'))
@@ -96,6 +103,7 @@ def thankyou():
 @app.route('/user/register', methods=['GET','POST'])
 def customer_register():
     form = CustomerRegisterForm()
+    redirect_message = session.pop('redirect_message', None)
     if form.validate_on_submit():
         # Generating a hashed password using bcrypt
         hash_password = bcrypt.generate_password_hash(form.password.data)
@@ -116,8 +124,10 @@ def customerLogin():
 
         # redirecting to registration if no such user has been registered before
         if not user:
-            flash('No such user exists. Please register.', 'danger')
+            flash('No such user was registered.', 'danger')
+           
             return redirect(url_for('customer_register'))
+            
 
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
@@ -199,9 +209,3 @@ def orders(invoice):
 
     return render_template('customer/order.html', invoice=invoice, tax=tax, subTotal=subTotal,
                            grandTotal=grandTotal, customer=customer, orders=orders)
-
-
-
-
-
-        
