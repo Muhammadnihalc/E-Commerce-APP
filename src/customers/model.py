@@ -4,11 +4,12 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 import json
 
+# helps to Load a user from the database using the user ID.
 @login_manager.user_loader
 def user_loader(user_id):
     return Register.query.get(user_id)
 
-
+#  below class is a Custom SQLAlchemy type decorator for storing JSON-encoded dictionaries in the database.
 class jsoncodedDict(db.TypeDecorator):
     impl = db.String
 
@@ -25,6 +26,7 @@ class jsoncodedDict(db.TypeDecorator):
             return json.loads(value)
 
 
+# User model for customer registration information.
 class Register(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key= True)
     name = db.Column(db.String(50), unique= False)
@@ -44,7 +46,7 @@ class Register(db.Model, UserMixin):
         return '<Register %r>' % self.name
     
 
-
+# db Model to store customer orders
 class CustomerOrder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     invoice = db.Column(db.String(30), unique=True, nullable=False)
@@ -56,6 +58,7 @@ class CustomerOrder(db.Model):
     def __repr__(self):
         return f'<CustomerOrder {self.invoice}>'
     
+#   db Model to store coupons code for discounts.
 class Coupons(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(20), unique=True, nullable=True)

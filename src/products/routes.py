@@ -9,24 +9,27 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import or_
 
 
+# below fun() will help to Query for retrieving all brands associated with existing products
 def brands():
     brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
     return brands
 
 
-
+# this fun() will help in Query to retrieve all categories associated with existing products
 def catagories():
     catagories = Category.query.join(Addproduct, (Category.id == Addproduct.category_id)).all()
     return catagories
 
-
+# home page 
 @app.route('/')
 def home():
+    # Get the page parameter from the request, defaulting to 1 if not provided
     page = request.args.get('page',1, type=int)
     products = Addproduct.query.filter(Addproduct.stock > 0).order_by(Addproduct.id.desc()).paginate(page=page, per_page=8)
     return render_template('products/index.html', products=products,brands=brands(), categories=catagories())
 
 
+# this route helps in searching 
 @app.route('/result')
 def result():
     search_query = request.args.get('q')
@@ -53,21 +56,21 @@ def session_check():
     for key, value in session.items():
         return(f'{key}: {value}')
     
+
 @app.route('/clear_session')
 def clear_session():
     session.clear()
     return redirect(url_for('home'))
 
 
-
+# this route will Retrieve a single product by its ID or return a 404 error if not found
 @app.route('/product/<int:id>')
 def single_page(id):  
     product = Addproduct.query.get_or_404(id)
     return render_template('products/single_page.html', product=product, brands=brands(), categories=catagories())
 
 
-
-
+ # Retrieve products associated with the specified brand
 @app.route('/brand/<int:id>')
 def get_brand(id):
     page = request.args.get('page',1, type=int)
@@ -75,9 +78,7 @@ def get_brand(id):
     brand = Addproduct.query.filter_by(brand=get_brand).paginate(page=page, per_page=8)
     return render_template('products/index.html',brand=brand,brands=brands(),catagories=catagories(),get_brand=get_brand)
 
-
-
-
+ # Retrieve products associated with the specified category
 @app.route('/categories/<int:id>')
 def get_category():
     page = request.args.get('page',1,type=int)
@@ -87,7 +88,7 @@ def get_category():
     return render_template('products/index.html' , get_prod=get_prod , categories=catagories(), brands=brands() , get_cat=get_cat)
 
 
-
+# route to add new brand
 @app.route('/addbrand', methods = ['GET', 'POST'])
 def addbrand():
     if 'logged_in' not in session or not session['logged_in']:
@@ -105,8 +106,7 @@ def addbrand():
     return render_template('products/addbrand.html', brands= 'brands')
 
 
-
-
+# route to add new category
 @app.route('/addcat', methods=['GET', 'POST'])
 def addcat():
     if 'logged_in' not in session or not session['logged_in']:
@@ -124,7 +124,7 @@ def addcat():
     return render_template('products/addbrand.html')
 
 
-
+# edit an excisting brand
 @app.route('/editbrand/<int:id>', methods=['GET', 'POST'])
 def editbrand(id):
     if 'logged_in' not in session or not session['logged_in']:
@@ -141,7 +141,7 @@ def editbrand(id):
 
     return render_template('products/editbrand.html', brand=brand)
 
-
+# delete a specific brand and all products associated with it
 @app.route("/deletebrand/<int:id>", methods=['POST'])
 def deletebrand(id):
     if 'logged_in' not in session or not session['logged_in']:
@@ -162,8 +162,7 @@ def deletebrand(id):
 
 
 
-
-
+#edit an excisting category
 @app.route('/editcategory/<int:id>', methods=['GET', 'POST'])
 def editcategory(id):
     if 'logged_in' not in session or not session['logged_in']:
@@ -180,7 +179,7 @@ def editcategory(id):
 
     return render_template('products/editcategory.html', category=category)
 
-
+#  delete a specific category and all products associated with it
 @app.route('/delete_category/<int:category_id>', methods=['POST'])
 def delete_category(category_id):
     if 'logged_in' not in session or not session['logged_in']:
@@ -200,6 +199,7 @@ def delete_category(category_id):
     return redirect(url_for('admin_home'))
 
 
+# add a new product
 @app.route('/addproduct', methods=['GET', 'POST'])
 def add_product():
     if 'logged_in' not in session or not session['logged_in']:
@@ -239,7 +239,7 @@ def add_product():
 
 
 
-
+# update the specific product
 @app.route('/updateproduct/<int:id>', methods=['GET', 'POST'])
 def updateproduct(id):
     if 'logged_in' not in session or not session['logged_in']:
@@ -301,7 +301,7 @@ def updateproduct(id):
 
 
 
-
+# delete a specific product
 @app.route('/deleteproduct/<int:id>', methods=['POST'])
 def deleteproduct(id):
     if 'logged_in' not in session or not session['logged_in']:

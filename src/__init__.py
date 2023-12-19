@@ -9,9 +9,11 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '82821'
+app.config['SECRET_KEY'] = 'qtwvrgb82shwgd82devb1'
+# in-memory data storage
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-
+# Remove the above line and Uncomment the below line to use a permanant backend storage 
+#app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)

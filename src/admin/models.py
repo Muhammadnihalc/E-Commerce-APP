@@ -2,6 +2,7 @@ from src import db
 
 from sqlalchemy.orm import relationship
 
+# db model to store admin information 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     Name = db.Column(db.String(50), unique=False, nullable=False)
@@ -16,9 +17,10 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
+# db model to store order info
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # Other fields related to the order
+    # Foreign key relationship with User mode
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 

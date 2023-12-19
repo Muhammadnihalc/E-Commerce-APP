@@ -10,13 +10,13 @@ import secrets
 import stripe
 import os
 
+
 publishable_key  = 'pk_test_51ONCYrSFRFKTWFd7Jytzziv4iaUWIcVaSZpVD58tQcGtQAYtl2rCpzIb8GpRqOBgvW0yDmHHRwnf1u8jIiV94ybQ00fcBUBiFc'
 
 stripe.api_key = 'sk_test_51ONCYrSFRFKTWFd7cqc4jPxy2WHi307gwAyFupaNJ2gA1x3DxCseoKpiqg76sVOpMfWPHau4GnZ9SmJ9Ngx3B78000kxsf73ZT'
 
 
-
-
+# payement route integration with stripe api
 @app.route('/payment', methods=['POST'])
 @login_required
 def payment():
@@ -26,7 +26,7 @@ def payment():
         invoice = request.form.get('invoice')
         amount = request.form.get('amount')
 
-        # Create a PaymentMethod from the token
+        # Creating a PaymentMethod from the token
         payment_method = stripe.PaymentMethod.create(
             type='card',
             card={
@@ -34,7 +34,7 @@ def payment():
             },
         )
 
-        # Create a customer and attach the PaymentMethod to it
+        # Creating a customer and attach the PaymentMethod to it
         customer = stripe.Customer.create(
             email=request.form['stripeEmail'],
             payment_method=payment_method.id,
@@ -53,7 +53,7 @@ def payment():
             confirm=True,
         )
 
-        # Update order status
+        # Updating order status
         orders = CustomerOrder.query.filter_by(customer_id=current_user.id, invoice=invoice).order_by(CustomerOrder.id.desc()).first()
         orders.status = 'paid'
         session.pop('coupon_code_discount')
@@ -92,11 +92,12 @@ def thankyou():
     return render_template('customer/thank.html')
     
 
-
+# Route for customer registration page
 @app.route('/user/register', methods=['GET','POST'])
 def customer_register():
     form = CustomerRegisterForm()
     if form.validate_on_submit():
+        # Generating a hashed password using bcrypt
         hash_password = bcrypt.generate_password_hash(form.password.data)
         register = Register(name=form.name.data, username=form.username.data, email=form.email.data,password=hash_password,country=form.country.data, city=form.city.data,contact=form.contact.data, address=form.address.data, zipcode=form.zipcode.data)
         db.session.add(register)
@@ -106,13 +107,14 @@ def customer_register():
     return render_template('customer/register.html', form=form)
 
 
-
+# route for cutomer login
 @app.route('/user/login', methods=['GET', 'POST'])
 def customerLogin():
     form = CustomerLoginForm()
     if form.validate_on_submit():
         user = Register.query.filter_by(email=form.email.data).first()
 
+        # redirecting to registration if no such user has been registered before
         if not user:
             flash('No such user exists. Please register.', 'danger')
             return redirect(url_for('customer_register'))
@@ -136,7 +138,7 @@ def customer_logout():
     return redirect(url_for('home'))
 
 
-
+# Route for placing an order
 @app.route('/getorder', methods=['GET'])
 @login_required
 def get_order():
@@ -165,6 +167,7 @@ def get_order():
             return redirect(url_for('get_cart'))
 
  
+# Route for displaying the final order details
 @app.route('/orders/<invoice>')
 @login_required
 def orders(invoice):
@@ -176,6 +179,7 @@ def orders(invoice):
         total = 0
         customer_id = current_user.id
         customer = Register.query.filter_by(id=customer_id).first()
+         # Get the order details based on the invoice
         orders = CustomerOrder.query.filter_by(customer_id=customer_id, invoice=invoice).order_by(
             CustomerOrder.id.desc()).first()
         
@@ -187,6 +191,7 @@ def orders(invoice):
             total = float("%.2f" % (1.06 * float(subTotal)))
             
             grandTotal = round(total - coupon_code_discount, 2)
+            # Remove applied coupon code after calculation
             Coupons.query.filter_by(user_id=current_user.id).delete()
             db.session.commit()
     else:

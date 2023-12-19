@@ -6,6 +6,7 @@ from src.products.models import Addproduct , Brand ,Category
 import os
 
 
+#Admin home route which Displays all the list of products.
 @app.route('/admin')
 def admin_home():
     if 'logged_in' not in session or not session['logged_in']:
@@ -18,6 +19,7 @@ def admin_home():
     return render_template('admin/index.html', title='Admin page', products= products )
 
 
+#Brands  route which will displays all the available list of brands.
 @app.route('/brands')
 def brands_home():
     if 'logged_in' not in session or not session['logged_in']:
@@ -30,6 +32,7 @@ def brands_home():
     return render_template('admin/brand.html', title='brand page', brands= brands )
 
 
+#category  route which will displays all the available list of category.
 @app.route('/category')
 def category():
     if 'logged_in' not in session or not session['logged_in']:
@@ -41,11 +44,12 @@ def category():
     return render_template('admin/brand.html', title='brand page', Categories=Categories )
 
 
-
+# Registration route which will handles admin registration.
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
+        # checking the secret code preventing outside users from admin registration 
         if form.company_secret_code.data == 'secret123':
             hash_Password = bcrypt.generate_password_hash(form.password.data)
             user = User(Name=form.name.data, username=form.username.data, email=form.email.data, password=hash_Password)
@@ -59,11 +63,12 @@ def register():
             
     return render_template('admin/register.html', form=form , title = "Registration Page")
 
-
+# admin login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = Loginforms(request.form)
     if request.method == 'POST' and form.validate():
+        # redirecting to registration if no such user has been registered before
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):

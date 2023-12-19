@@ -18,7 +18,7 @@ def MagerDicts(dict1,dict2):
         return dict(list(dict1.items()) + list(dict2.items()))
 
 
-
+# route responsible for Adding products to the shopping cart.
 @app.route('/addcart', methods=['POST'])
 def AddCart():
     try:
@@ -41,7 +41,7 @@ def AddCart():
                     'colors': product.colors
                 }
             }
-
+            # checking shoppingcart available in session
             if 'shoppingcart' in session:
                 print(session['shoppingcart'])
                 if product_id in session['shoppingcart']:
@@ -62,7 +62,7 @@ def AddCart():
         return redirect(url_for('home'))
 
 
-
+#route for Displaying the shopping cart.
 @app.route('/carts')
 def get_cart():
     global coupon_code_discount
@@ -74,6 +74,7 @@ def get_cart():
     total = 0
     grandtotal = 0
 
+    # calculation the grandtotal
     for key, product in session['shoppingcart'].items():
         discount = (product['discount'] / 100) * float(product['price'])
         quantity = int(product['quantity']) if product['quantity'] is not None else 0
@@ -89,7 +90,7 @@ def get_cart():
 
 
 
-
+#route which will help to Update the quantity and color of a product in the shopping cart.
 @app.route('/updatecart/<int:code>', methods=['POST'])
 def updatecart(code):
     if 'shoppingcart' not in session or len(session['shoppingcart']) <= 0:
@@ -110,7 +111,7 @@ def updatecart(code):
             return redirect(url_for('get_cart'))
 
 
-
+# delete the specific item from cart
 @app.route('/deleteitem/<int:id>')
 def deleteitem(id):
     if 'shoppingcart' not in session or len(session['shoppingcart']) <= 0:
@@ -126,6 +127,7 @@ def deleteitem(id):
         return redirect(url_for('get_cart'))
 
 
+# clear all the items in cart
 @app.route('/clearcart')
 def clearcart():
     try:
@@ -135,13 +137,14 @@ def clearcart():
         print(e)
 
 
-
+# this route will Generate and display a coupon code based on the user's order count.
 @app.route('/coupon_create')
 def coupon_create():
     # Check the order count for the current user
     order_count = CustomerOrder.query.filter_by(customer_id=current_user.id).count()
 
-    if order_count > 0 and order_count % 2 == 0:
+    # currently after every 3rd order you will get a discount coupon you can update the order count below to your requirement
+    if order_count > 0 and order_count % 3 == 0:
         # Generate a unique coupon code
         coupon_code = generate_unique_coupon_code()
 
@@ -150,11 +153,9 @@ def coupon_create():
         db.session.add(coupon)
         db.session.commit()
 
-        # Display flash messages
         flash('Congratulations! You are eligible for a 10% discount coupon.', 'success')
         flash(f'Your coupon code: {coupon_code}', 'info')
     else:
-        # Display a flash message indicating no coupon is available
         flash("Sorry, no coupon code to redeem.", 'warning')
 
     return render_template('products/coupon.html')
@@ -171,7 +172,7 @@ def generate_unique_coupon_code():
 
 
 
-
+# route which will help to Evaluate and apply the coupon code to the shopping cart.
 @app.route('/cal_coupon', methods=['POST'])
 def eval_coupon():
     global coupon_code_discount
@@ -198,7 +199,7 @@ def eval_coupon():
             discount_amount = 0.10 * grandtotal
             coupon_code_discount = discount_amount
             session['coupon_code_discount'] = discount_amount
-            
+
 
             flash(f'Coupon code applied successfully! You got an extra 10% discount.', 'success')
             flash(f'Discount amount: {discount_amount:.2f}', 'info')
@@ -209,39 +210,6 @@ def eval_coupon():
 
 
 
-# @app.route('/cal_coupon', methods=['POST'])
-# def eval_coupon():
-#     global coupon_code_discount
-
-#     if request.method == 'POST':
-#         entered_coupon_code = request.form.get('couponCode')
-
-#         # Check if the entered coupon code exists in the database
-#         coupon = Coupon.query.filter_by(code=entered_coupon_code).first()
-
-#         if coupon:
-#             # Coupon code is valid, calculate the discount
-#             subtotal = 0
-#             grandtotal = 0
-
-#             for key, product in session.get('shoppingcart', {}).items():
-#                 discount = (product['discount'] / 100) * float(product['price'])
-#                 quantity = int(product['quantity']) if product['quantity'] is not None else 0
-#                 subtotal += float(product['price']) * quantity
-#                 subtotal -= discount
-#                 tax = float("%.2f" % (0.06 * subtotal))
-#                 grandtotal = float("%.2f" % (1.06 * subtotal))
-
-
-#             discount_amount = 0.10 * grandtotal
-#             coupon_code_discount = discount_amount
-
-#             flash(f'Coupon code applied successfully! You got a 10% discount.', 'success')
-#             flash(f'Discount amount: ${discount_amount:.2f}', 'info')
-#         else:
-#             flash('Invalid coupon code. Please try again.', 'danger')
-
-#     return redirect(url_for('show_checkout_page'))
 
 
     

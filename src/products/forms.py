@@ -1,6 +1,7 @@
 from wtforms import Form, SubmitField,IntegerField,FloatField,StringField,TextAreaField,validators
 from flask_wtf.file import FileField,FileRequired,FileAllowed
 
+# this Form is for adding products
 class Addproducts(Form):
     name = StringField('Name', [validators.DataRequired()])
     price = FloatField('Price', [validators.DataRequired()])
