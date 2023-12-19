@@ -1,5 +1,6 @@
 from flask import render_template,session, request,redirect,url_for,flash,current_app
 from src import db , app
+from flask_login import login_required , current_user , logout_user , login_user
 from src.products.models import Addproduct
 from src.products.routes import brands, catagories
 from src.customers.model import CustomerOrder , Coupons
@@ -137,14 +138,27 @@ def clearcart():
         print(e)
 
 
+
+@login_required
+def coupon_create():
+    # Check if the user is logged in
+    if not current_user.is_authenticated:
+        flash('Please log in first', 'danger')
+        return redirect(url_for('login'))
+
+
 # this route will Generate and display a coupon code based on the user's order count.
 @app.route('/coupon_create')
+@login_required
 def coupon_create():
+    if not current_user.is_authenticated:
+        flash('Please log in first', 'danger')
+        return redirect(url_for('customerLogin'))
     # Check the order count for the current user
     order_count = CustomerOrder.query.filter_by(customer_id=current_user.id).count()
 
     # currently after every 3rd order you will get a discount coupon you can update the order count below to your requirement
-    if order_count > 0 and order_count % 3 == 0:
+    if order_count > 0 and order_count % 2 == 0:
         # Generate a unique coupon code
         coupon_code = generate_unique_coupon_code()
 
@@ -196,9 +210,9 @@ def eval_coupon():
                 tax = float("%.2f" % (0.06 * subtotal))
                 grandtotal = float("%.2f" % (1.06 * subtotal))
 
-            discount_amount = 0.10 * grandtotal
-            coupon_code_discount = discount_amount
-            session['coupon_code_discount'] = discount_amount
+                discount_amount = 0.10 * grandtotal
+                coupon_code_discount = discount_amount
+                session['coupon_code_discount'] = discount_amount
 
 
             flash(f'Coupon code applied successfully! You got an extra 10% discount.', 'success')
@@ -207,9 +221,3 @@ def eval_coupon():
             flash('Invalid coupon code or the coupon does not belong to you. Please try again.', 'danger')
 
     return redirect(url_for('get_cart'))
-
-
-
-
-
-    
