@@ -25,7 +25,15 @@ def catagories():
 def home():
     # Get the page parameter from the request, defaulting to 1 if not provided
     page = request.args.get('page', 1, type=int)
+    page = request.args.get('page', 1, type=int)
     products = Addproduct.query.filter(Addproduct.stock > 0).order_by(Addproduct.id.desc()).paginate(page=page, per_page=8)
+
+    # Check if there are no products
+    if not products.items:
+        flash("Sorry, admin has not added any products. You can browse and purchase the products once the admin adds them.", 'info')
+
+    return render_template('products/index.html', products=products, brands=brands(), categories=catagories())
+
 
     # Check if there are no products
     if not products.items:
@@ -214,6 +222,7 @@ def add_product():
     brands = Brand.query.all()
     categories = Category.query.all()
 
+
     form = Addproducts(request.form)
 
     if request.method == 'POST':
@@ -277,23 +286,27 @@ def updateproduct(id):
         if request.files.get('image_1'):
             try:
                 os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_1))
-                product.image_1 = save_image(request.files.get('images_1'), name=secrets.token_hex(16) + ",")
+                product.image_1 = save_image(request.files.get('image_1'), name=product.image_1)
             except:
-                product.image_1 = save_image(request.files.get('images_1'), name=secrets.token_hex(16) + ",")
+                product.image_1 = save_image(request.files.get('image_1'), name=product.image_1)
+
 
         if request.files.get('image_2'):
             try:
                 os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_2))
-                product.image_2 = save_image(request.files.get('images_2'), name=secrets.token_hex(16) + ",")
+                product.image_2 = save_image(request.files.get('image_2'), name=product.image_2)
             except:
-                product.image_2 = save_image(request.files.get('images_2'), name=secrets.token_hex(16) + ",")
+                product.image_2 = save_image(request.files.get('image_2'), name=product.image_2)
 
         if request.files.get('image_3'):
             try:
                 os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_3))
-                product.image_3 = save_image(request.files.get('images_3'), name=secrets.token_hex(16) + ",")
-            except:
-                product.image_3 = save_image(request.files.get('images_3'), name=secrets.token_hex(16) + ",")
+                product.image_3 = save_image(request.files.get('image_3'), name=product.image_3)
+            except: 
+               product.image_3 = save_image(request.files.get('image_3'), name=product.image_3)
+
+
+  
 
         db.session.commit()
         flash('The product has been updated', 'success')
