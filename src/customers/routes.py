@@ -124,7 +124,7 @@ def customerLogin():
 
         # redirecting to registration if no such user has been registered before
         if not user:
-            flash('No such user was registered.', 'danger')
+            flash('No such user was registered before.', 'danger')
            
             return redirect(url_for('customer_register'))
             
