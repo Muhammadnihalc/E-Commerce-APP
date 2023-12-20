@@ -9,27 +9,7 @@
           <li class="nav-item active">
             <a class="nav-link" href="/">Products <span class="sr-only">(current)</span></a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-             Brands
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              {% for brand in brands %}
-              <a class="dropdown-item" href="{{url_for('get_brand', id=brand.id)}}">{{brand.name}}</a>
-              {% endfor %}
-            </div>
-          </li>
-           
-          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-               Categories
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  {% for category in categories %}
-                <a class="dropdown-item" href="{{url_for('get_category',id=category.id)}}">{{category.name}}</a>
-                {% endfor %}
-              </div>
-            </li>
+          
            {% if current_user.is_authenticated %}
            <li class="nav-item">
             <a href="{{url_for('customer_logout')}}" class="nav-link">{{current_user.name}}</a>
