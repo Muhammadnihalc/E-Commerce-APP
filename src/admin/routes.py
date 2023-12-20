@@ -80,7 +80,7 @@ def login():
             else:
                 flash('Invalid credentials - wrong password', 'danger')
         else:
-            flash('No such user was been registered.', 'danger')
+            flash('No such user was been registered before.', 'danger')
         
 
             return redirect(url_for('register'))
